@@ -29,10 +29,9 @@ class _UserProfileState extends State<UserProfile> {
   @override
   void initState() {
     super.initState();
-    getMemberInfo();
   }
 
-  void getMemberInfo() async {
+  /*void getMemberInfo() async {
     Database _db = await DatabaseInit().initDB();
     List<Map<String, dynamic>> result = await _db.rawQuery(
         "SELECT * FROM Member WHERE id = 1");
@@ -44,10 +43,10 @@ class _UserProfileState extends State<UserProfile> {
         name = result.first['name'].toString();
         height = result.first['height'].toString() + "cm";
         weight = result.first['weight'].toString() + "kg";
-        // age = (DateTime.now().year - DateFormat("yyyymmdd").parse(result.first['birth']).year).toString();
+        age = (DateTime.now().year - DateFormat("yyyy-MM-dd").parse(result.first['birth']).year).toString();
       });
     }
-  }
+  }*/
 
   @override
   Widget build(BuildContext context) {
@@ -142,7 +141,7 @@ class _UserProfileState extends State<UserProfile> {
                       ),
                       Expanded(
                         child: TitleSubtitleCell(
-                          title: "-",
+                          title: controller.birth ?? "-",
                           subtitle: "나이",
                         ),
                       ),
