@@ -2,11 +2,10 @@ import 'package:fitnessapp/routes.dart';
 import 'package:fitnessapp/utils/app_colors.dart';
 import 'package:fitnessapp/utils/counting/counting_controller.dart';
 import 'package:fitnessapp/utils/db/db_init.dart';
-import 'package:fitnessapp/utils/db/member/member.dart';
 import 'package:fitnessapp/utils/timer/timer_view_model.dart';
 import 'package:fitnessapp/view/dashboard/dashboard_screen.dart';
-import 'package:fitnessapp/view/signup/signup_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:provider/provider.dart';
 
@@ -23,6 +22,15 @@ class MyApp extends StatelessWidget {
     DatabaseInit().initDB();
     return MaterialApp(
       title: 'fitness',
+      localizationsDelegates: [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: [
+        Locale('en', ''),
+        Locale('ko', '')
+      ],
       debugShowCheckedModeBanner: false,
       routes: routes,
       theme: ThemeData(

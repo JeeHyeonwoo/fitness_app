@@ -73,14 +73,18 @@ class _SignupScreenState extends State<SignupScreen> {
                 textEditingController: _weightController,
                 textInputType: TextInputType.number,
               ),
-              SizedBox(height: media.width*0.03),
-              RoundDateField(textEditingController: _dateController),
               SizedBox(height: media.width*0.05),
+              RoundDateField(
+                  textEditingController: _dateController,
+                  icon: "assets/icons/date.png",
+              ),
+              SizedBox(height: media.width*0.03),
               GetBuilder<Member>(builder: (controller) {
                 return RoundGradientButton(
                   title: "저장",
                   onPressed: () {
-                    controller.setMember(_nameController, _heightController, _weightController);
+                    print(_dateController.text);
+                    controller.setMember(_nameController, _heightController, _weightController, _dateController);
                     Navigator.pop(context);
                   },
                 );

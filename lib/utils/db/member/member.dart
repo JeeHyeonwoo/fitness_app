@@ -26,7 +26,7 @@ class Member extends GetxController{
     }
   }
 
-  void setMember(TextEditingController nameController, TextEditingController heightController, TextEditingController weightController) async{
+  void setMember(TextEditingController nameController, TextEditingController heightController, TextEditingController weightController, TextEditingController dateController) async{
     final db = await DatabaseInit().initDB();
     List<Map<String, dynamic>> result = await db.rawQuery(
         "SELECT * FROM Member WHERE id = 1"
@@ -36,9 +36,24 @@ class Member extends GetxController{
 
     if(result.isEmpty) {
       await db.rawQuery("INSERT INTO Member (name, height, weight, birth)"
-          " VALUES ('${nameController.text}', ${int.parse(heightController.text)}, ${int.parse(weightController.text)}, '19950228')");
-    }else {
-      await db.rawQuery("UPDATE Member SET name='${nameController.text}', height=${heightController.text}, weight=${weightController.text} WHERE id = 1");
+          " VALUES ('${nameController.text}', ${int.parse(heightController.text)}, ${int.parse(weightController.text)}, ${heightController.text})");
+    } else {
+      String query = "UPDATE Member SET ";
+
+      if(nameController.text.isNotEmpty) {
+        query += "name='${nameController.text}'";
+      }
+      if(heightController.text.isNotEmpty) {
+        query += " ,height=${heightController.text}";
+      }
+      if(heightController.text.isNotEmpty) {
+        query += " ,weight=${heightController.text}";
+      }
+      if(dateController.text.isNotEmpty) {
+        query += " ,birth=${dateController.text}";
+      }
+
+      await db.rawQuery(query + " WHERE id = 1");
     }
 
     name = nameController.text;
