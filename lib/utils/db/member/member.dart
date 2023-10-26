@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-
 import '../db_init.dart';
 
 class Member extends GetxController{
@@ -34,7 +33,6 @@ class Member extends GetxController{
     List<Map<String, dynamic>> result = await db.rawQuery(
         "SELECT * FROM Member WHERE id = 1"
     );
-
 
     if(result.isEmpty) {
       await db.rawQuery("INSERT INTO Member (name, height, weight, birth)"

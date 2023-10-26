@@ -60,6 +60,8 @@ dependencies:
   shared_preferences: ^2.0.20
   textfield_datepicker: ^0.2.0
   flutter_localization: ^0.1.14
+  firebase_messaging: ^14.7.2
+  flutter_local_notifications: ^16.1.0
 
 flutter_native_splash:
   color: "#ffffff"
