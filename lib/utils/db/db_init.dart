@@ -47,7 +47,26 @@ class DatabaseInit {
             birth TEXT
           )
         ''');
+
+        await db.execute('''
+        CREATE TABLE Notification(
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            image TEXT,
+            title TEXT,
+            time TEXT
+          )
+        ''');
+
+        await db.execute('''
+          CREATE TABLE Contact(
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT,
+            contact TEXT,
+            notificationAvailability INTEGER
+          )
+        ''');
       },
+
     );
   }
 }

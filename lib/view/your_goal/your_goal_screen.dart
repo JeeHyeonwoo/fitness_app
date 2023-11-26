@@ -88,7 +88,7 @@ class _YourGoalScreenState extends State<YourGoalScreen> {
                                   style: const TextStyle(
                                     color: AppColors.whiteColor,
                                     fontSize: 12,
-                                    fontFamily: "Poppins",
+                                    fontFamily: "SkyBori_KR",
                                     fontWeight: FontWeight.w400,
                                   ),
                                 ),
@@ -133,7 +133,7 @@ class _YourGoalScreenState extends State<YourGoalScreen> {
                       style: TextStyle(
                         color: AppColors.grayColor,
                         fontSize: 12,
-                        fontFamily: "Poppins",
+                        fontFamily: "SkyBori_KR",
                       ),
                     ),
                     const Spacer(),

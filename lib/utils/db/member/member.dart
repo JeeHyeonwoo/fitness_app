@@ -16,7 +16,7 @@ class Member extends GetxController{
   void getMember() async{
     final _db = await DatabaseInit().initDB();
     List<Map<String, dynamic>> result = await _db.rawQuery(
-        "SELECT * FROM Member WHERE id = 1");
+        "SELECT * FROM Member ORDER BY id DESC LIMIT 1");
 
     if(result.first.isNotEmpty) {
       name = result.first['name'].toString();
@@ -24,6 +24,7 @@ class Member extends GetxController{
       weight = result.first['weight'] as int ;
       birth = (DateTime.now().year - DateFormat("yyyy-MM-dd").parse(result.first['birth']).year + 1).toString();
     }
+    update();
   }
 
   void setMember(TextEditingController nameController, TextEditingController heightController, TextEditingController weightController, TextEditingController dateController) async{
@@ -31,12 +32,55 @@ class Member extends GetxController{
     bool frontData = false;
 
     List<Map<String, dynamic>> result = await db.rawQuery(
-        "SELECT * FROM Member WHERE id = 1"
+        "SELECT * FROM Member ORDER BY id DESC LIMIT 1"
     );
 
     if(result.isEmpty) {
-      await db.rawQuery("INSERT INTO Member (name, height, weight, birth)"
-          " VALUES ('${nameController.text}', ${int.parse(heightController.text)}, ${int.parse(weightController.text)}, ${heightController.text})");
+      String query1 = "INSERT INTO Member (";
+      String query2 = " VALUES (";
+
+      if(nameController.text.isNotEmpty) {
+        query1 += "name";
+        query2 += "'${nameController.text}'";
+        frontData = true;
+        name = nameController.text;
+      }
+
+      if(heightController.text.isNotEmpty) {
+        if(frontData) {
+          query1 += " ,";
+          query2 += " ,";
+        }
+        query1 += "height";
+        query2 += "${heightController.text}";
+        frontData = true;
+        height = int.parse(heightController.text);
+      }
+      if(weightController.text.isNotEmpty) {
+        if(frontData) {
+          query1 += " ,";
+          query2 += " ,";
+        }
+        query1 += "weight";
+        query2 += "${weightController.text}";
+        frontData = true;
+        weight = int.parse(weightController.text);
+      }
+
+      if(dateController.text.isNotEmpty) {
+        if(frontData) {
+          query1 += " ,";
+          query2 += " ,";
+        }
+        query1 += "birth";
+        query2 += "'${dateController.text}'";
+        birth = (DateTime.now().year - DateFormat("yyyy-MM-dd").parse(dateController.text).year + 1).toString();
+      }
+      query1 += ")";
+      query2 += ")";
+      print(query1 + query2);
+      await db.rawQuery(query1+ query2);
+
     } else {
       String query = "UPDATE Member SET ";
 
@@ -61,7 +105,7 @@ class Member extends GetxController{
         birth = (DateTime.now().year - DateFormat("yyyy-MM-dd").parse(dateController.text).year + 1).toString();
       }
       print(query);
-      await db.rawQuery(query + " WHERE id = 1");
+      await db.rawQuery(query + " WHERE id=(SELECT id FROM Member ORDER BY id DESC LIMIT 1)");
     }
 
     update();

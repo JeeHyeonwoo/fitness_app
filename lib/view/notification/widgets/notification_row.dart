@@ -1,5 +1,11 @@
 import 'package:fitnessapp/utils/app_colors.dart';
+import 'package:fitnessapp/utils/db/db_init.dart';
+import 'package:fitnessapp/utils/notifications/notification_controller.dart';
+import 'package:fitnessapp/utils/notifications/notificationlist_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:sqflite/sqflite.dart';
 
 class NotificationRow extends StatelessWidget {
   final Map nObj;
@@ -7,6 +13,7 @@ class NotificationRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Get.put(NotificationController());
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
@@ -43,14 +50,19 @@ class NotificationRow extends StatelessWidget {
                   ),
                 ],
               )),
-          IconButton(
-              onPressed: () {},
-              icon: Image.asset(
-                "assets/icons/sub_menu_icon.png",
-                width: 15,
-                height: 15,
-                fit: BoxFit.contain,
-              ))
+          GetBuilder<NotificationListController>(builder: (controller){
+            return IconButton(
+                onPressed: () {
+                  controller.delete(nObj['id']);
+                },
+                icon: Image.asset(
+                  "assets/icons/closed_btn.png",
+                  width: 15,
+                  height: 15,
+                  fit: BoxFit.contain,
+                )
+            );
+          })
         ],
       ),
     );

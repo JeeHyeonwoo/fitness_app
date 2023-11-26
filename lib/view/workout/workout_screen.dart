@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:ffi';
 
 import 'package:fitnessapp/utils/bluetooth/ble_device_connector.dart';
 import 'package:fitnessapp/utils/bluetooth/ble_scanner.dart';
@@ -39,9 +38,12 @@ class _WorkoutScreenState extends State<WorkoutScreen> with TickerProviderStateM
   String? leftDeviceId;
   String? rightDeviceId;
 
-  final Uuid uuid = Uuid.parse("6E400001-B5A3-F393-E0A9-E50E24DCCA9E");
+  final Uuid uuid = Uuid.parse("6e400001-b5a3-f393-e0a9-e50e24dcca9e");
+  final Uuid charWriteUuid = Uuid.parse("6e400002-b5a3-f393-e0a9-e50e24dcca9e");
+  final Uuid charNotifyUuid = Uuid.parse("6E400003-B5A3-F393-E0A9-E50E24DCCA9E");
+  StreamSubscription<List<int>>? leftDataStream;
+  StreamSubscription<List<int>>? rightDataStream;
 
-  final StreamController<bool> _bleConnectionController = StreamController();
   bool isPlaying = false;
   bool leftBleConnection = false;
   bool rightBleConnection = false;
@@ -60,13 +62,6 @@ class _WorkoutScreenState extends State<WorkoutScreen> with TickerProviderStateM
 
   double progress = 1.0;
 
-  Stream<bool> get bleState => _bleConnectionController.stream;
-
-  void _pushBleState(bool state) {
-    print("ble state: ${state}");
-    _bleConnectionController.add(state);
-  }
-
   void notify() {
     if (timeText == '0:00:00') {
       FlutterRingtonePlayer.playNotification();
@@ -76,11 +71,10 @@ class _WorkoutScreenState extends State<WorkoutScreen> with TickerProviderStateM
   @override
   void initState() {
     super.initState();
-    // DB Setting
-    _pushBleState(false);
     //ble constructor
     _ble = FlutterReactiveBle();
     _scanner = BleScanner(ble: _ble, logMessage: (message){});
+
     _leftConnection = BleDeviceConnector(ble: _ble, logMessage: (message) {});
     _leftConnection.state.listen((state) {
       if (state.connectionState == DeviceConnectionState.connected) {
@@ -88,11 +82,11 @@ class _WorkoutScreenState extends State<WorkoutScreen> with TickerProviderStateM
           leftDeviceId = state.deviceId;
           leftBleConnection = true;
         });
-
       } else {
         setState(() {
           leftBleConnection = false;
         });
+        // leftStreamController.stream.;
         print("왼쪽 디바이스 연결 끊김: ${state.connectionState}");
       }
     });
@@ -150,8 +144,14 @@ class _WorkoutScreenState extends State<WorkoutScreen> with TickerProviderStateM
         _useTime++;
       });
     });
+    if(leftDeviceId != null) {
+      leftDeviceReadData(leftDeviceId!);
+    }
 
-    test();
+    if(rightDeviceId != null) {
+      rightDeviceReadData(rightDeviceId!);
+    }
+    // test();
     // count setting
   }
 
@@ -159,39 +159,87 @@ class _WorkoutScreenState extends State<WorkoutScreen> with TickerProviderStateM
     _timer?.cancel();
   }
 
-  Future<void> _timerReset() async{
+  Future<void> _timerReset() async {
     /*_counting += 30;
     _useTime += 300;*/
+    print("counting: ${_counting}, useTime: ${_useTime}");
     if (_counting > 0 && _useTime > 0 ) {
       _useTime++; // 약간의 시간 오차 해결
-      WorkoutRecord workoutRecord = WorkoutRecord(dateTime: DateTime.now().toString(), useTime: _useTime, count: _counting);
+      _counting++;
       Database database = await DatabaseInit().database;
-      await database.insert("WorkoutRecord", workoutRecord.toMap());
+      await database.rawQuery("""INSERT INTO WorkoutRecord (dateTime, useTime, count)
+       VALUES ('${DateTime.now().toString()}', ${_useTime}, ${_counting})""");
       _workoutRecordRecent.notify();
     }
     _timer?.cancel();
+
+    timerController.reset();
+    textEditingController.text = "10";
+
     _useTime = 0;
     _counting = 0;
   }
 
-  void getCount() {
-    // 블루투스 연결 여부 확인
-    bleState.listen((event) {
-      if(event) {
-        print("Get Data");  // 연속적으로 데이터를 받아와야함.
+  void leftDeviceReadData(String deviceId) async{
+    final characteristic = QualifiedCharacteristic(serviceId: uuid, characteristicId: charNotifyUuid, deviceId: deviceId);
+    // final writeChar = QualifiedCharacteristic(characteristicId: charWriteUuid, serviceId: uuid, deviceId: deviceId);
+
+    final chars = await _ble.resolve(characteristic);
+
+    // _ble.writeCharacteristicWithResponse(writeChar, value: [114]);
+    for (Characteristic char in chars) {
+      if (char.isNotifiable) {
+        leftDataStream = char.subscribe().listen((event) {
+          print(event);
+          int count = int.parse(textEditingController.text);
+          if ( count > 1 ) {
+            count--;
+            setState(() {
+              _counting++;
+              textEditingController.text = count.toString();
+            });
+          }else {
+            _timerReset();
+            leftDataStream?.cancel();
+            rightDataStream?.cancel();
+          }
+        });
       }
-    });
+    }
+    // final response = await _ble.readCharacteristic(characteristic);
+    if (chars.isEmpty) throw Exception("Characteristic not found or discovered: $characteristic");
   }
 
-  void stopGetCount() {
-  }
+  void rightDeviceReadData(String deviceId) async{
+    final characteristic = QualifiedCharacteristic(serviceId: uuid, characteristicId: charNotifyUuid, deviceId: deviceId);
+    // final writeChar = QualifiedCharacteristic(characteristicId: charWriteUuid, serviceId: uuid, deviceId: deviceId);
 
-  Future<void> test() async {
-    final characteristic = QualifiedCharacteristic(serviceId: uuid, characteristicId: uuid, deviceId: leftDeviceId!);
-    final response = await _ble.readCharacteristic(characteristic);
-    print(response);
-  }
+    final chars = await _ble.resolve(characteristic);
 
+    // _ble.writeCharacteristicWithResponse(writeChar, value: [114]);
+
+    for (Characteristic char in chars) {
+      if (char.isNotifiable) {
+        rightDataStream = char.subscribe().listen((event) {
+          print(event);
+          int count = int.parse(textEditingController.text);
+          if ( count > 1 ) {
+            count--;
+            setState(() {
+              _counting++;
+              textEditingController.text = count.toString();
+            });
+          }else {
+            _timerReset();
+            leftDataStream?.cancel();
+            rightDataStream?.cancel();
+          }
+        });
+      }
+    }
+    // final response = await _ble.readCharacteristic(characteristic);
+    if (chars.isEmpty) throw Exception("Characteristic not found or discovered: $characteristic");
+  }
 
   @override
   void dispose() {
@@ -199,7 +247,6 @@ class _WorkoutScreenState extends State<WorkoutScreen> with TickerProviderStateM
     _scanner.dispose();
     timerController.dispose();
     textEditingController.dispose();
-
     super.dispose();
   }
 
@@ -208,11 +255,12 @@ class _WorkoutScreenState extends State<WorkoutScreen> with TickerProviderStateM
     return Scaffold(
       appBar: AppBar(
         backgroundColor: AppColors.whiteColor,
-        title: Text("운동",
+        title: Text("마마슈즈",
           style: TextStyle(
-            fontFamily: "Poppins",
-            fontWeight: FontWeight.w700,
-            fontSize: 25,
+            color: Colors.black87,
+            fontFamily: "SkyBori_KR",
+            fontWeight: FontWeight.normal,
+            fontSize: 30,
           ),),
         centerTitle: true,
         actions: [
@@ -220,7 +268,8 @@ class _WorkoutScreenState extends State<WorkoutScreen> with TickerProviderStateM
               onPressed: () async {
                 var requestStatus = await Permission.bluetoothScan.request();
                 await Permission.bluetoothConnect.request();
-
+                rightDataStream?.cancel();
+                leftDataStream?.cancel();
                 if(requestStatus.isGranted) {
                   // 연결이 안되어 있을시
                   if (!leftBleConnection) {
@@ -230,8 +279,11 @@ class _WorkoutScreenState extends State<WorkoutScreen> with TickerProviderStateM
                     await _scanner.stopScan();
                     print("디바이스 검색 종료 : ${_scanner.getDevices()}");
 
+                    // RegExp regExp = RegExp('STEPPER_\\d+L');
+                    // List<DiscoveredDevice> devices = _scanner.getDevices().where((device) => regExp.hasMatch(device.name)).toList();
+                    // _leftConnection.connect(devices.first.id);
                     for(DiscoveredDevice device in _scanner.getDevices()) {
-                      if (device.name == "STEPPER_L Service") {
+                      if (device.name == "STEPPER_2L Service") {
                         print("왼쪽 디바이스 연결 시도");
                         _leftConnection.connect(device.id);
                       }
@@ -263,7 +315,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> with TickerProviderStateM
                     print("디바이스 검색 종료 : ${_scanner.getDevices()}");
 
                     for(DiscoveredDevice device in _scanner.getDevices()) {
-                      if (device.name == "STEPPER_R Service") {
+                      if (device.name == "STEPPER_2R Service") {
                         print("오른쪽 디바이스 연결 시도");
                         _rightConnection.connect(device.id);
                       }
@@ -284,17 +336,62 @@ class _WorkoutScreenState extends State<WorkoutScreen> with TickerProviderStateM
       backgroundColor: AppColors.whiteColor,
       body: Column(
         children: [
+          Container(
+            margin: EdgeInsets.fromLTRB(0, 30, 0, 0),
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    if (timerController.isDismissed) {
+                      showModalBottomSheet(
+                        context: context,
+                        builder: (context) => Container(
+                            height: 300,
+                            child: StatefulBuilder(
+                              builder: (context, setState) {
+                                return NumberPicker(
+                                  minValue: 10,
+                                  maxValue: 10000,
+                                  step: 10,
+                                  value: int.parse(textEditingController.text),
+                                  onChanged: (int value) {
+                                    setState(() {
+                                      textEditingController.text = value.toString();
+                                    });
+                                  },
+                                );
+                              },
+                            )
+                        ),
+                      );
+                    }
+                  },
+                  child: AnimatedBuilder(
+                    animation: textEditingController,
+                    builder: (context, child) => Text(
+                      textEditingController.text,
+                      style: TextStyle(
+                        fontSize: 50,
+                        fontWeight: FontWeight.normal,
+                      ),
+                    ),
+                  ),
+                )
+              ],
+            ),
+          ),
           Expanded(
             child: Stack(
               alignment: Alignment.center,
               children: [
                 SizedBox(
-                  width: 300,
-                  height: 300,
+                  width: 250,
+                  height: 250,
                   child: CircularProgressIndicator(
                     backgroundColor: Colors.grey.shade300,
                     value: progress,
-                    strokeWidth: 6,
+                    strokeWidth: 5,
                   ),
                 ),
                 GestureDetector(
@@ -322,7 +419,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> with TickerProviderStateM
                     builder: (context, child) => Text(
                       timeText,
                       style: TextStyle(
-                        fontSize: 60,
+                        fontSize: 50,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -332,51 +429,6 @@ class _WorkoutScreenState extends State<WorkoutScreen> with TickerProviderStateM
             ),
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                GestureDetector(
-                  onTap: () {
-                    if (timerController.isDismissed) {
-                      showModalBottomSheet(
-                        context: context,
-                        builder: (context) => Container(
-                          height: 300,
-                          child: StatefulBuilder(
-                            builder: (context, setState) {
-                              return NumberPicker(
-                                minValue: 10,
-                                maxValue: 10000,
-                                step: 10,
-                                value: int.parse(textEditingController.text),
-                                onChanged: (int value) {
-                                  setState(() {
-                                    textEditingController.text = value.toString();
-                                  });
-                                },
-                              );
-                            },
-                          )
-                        ),
-                      );
-                    }
-                  },
-                  child: AnimatedBuilder(
-                    animation: textEditingController,
-                    builder: (context, child) => Text(
-                      textEditingController.text,
-                      style: TextStyle(
-                        fontSize: 60,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                )
-              ],
-              ),
-            ),
-          Padding(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 40),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -385,6 +437,8 @@ class _WorkoutScreenState extends State<WorkoutScreen> with TickerProviderStateM
                   onTap: () {
                     if (timerController.isAnimating) {
                       timerController.stop();
+                      leftDataStream?.cancel();
+                      rightDataStream?.cancel();
                       _timerStop();
                       setState(() {
                         isPlaying = false;
@@ -413,6 +467,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> with TickerProviderStateM
                     timerController.reset();
                     setState(() {
                       isPlaying = false;
+                      textEditingController.text = "10";
                     });
                   },
                   child: RoundButton(

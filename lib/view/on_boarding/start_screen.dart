@@ -28,7 +28,7 @@ class StartScreen extends StatelessWidget {
             const Text(
               "Fitness",
               style: TextStyle(
-                fontFamily: "Poppins",
+                fontFamily: "SkyBori_KR",
                 fontSize: 36,
                 color: AppColors.blackColor,
                 fontWeight: FontWeight.w700,
@@ -57,7 +57,7 @@ class StartScreen extends StatelessWidget {
                   "Get Started",
                   style: TextStyle(
                     fontSize: 16,
-                    fontFamily: "Poppins",
+                    fontFamily: "SkyBori_KR",
                     fontWeight: FontWeight.w700,
                   ),
                 ),

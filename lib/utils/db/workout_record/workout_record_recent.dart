@@ -43,7 +43,8 @@ class WorkoutRecordRecent {
         useTime += (record['useTime'] as int);
       }
     }
-
+    double timeProgress = (useTime/objectiveTime);
+    double countprogress = useCount/objectiveCount;
     _workoutRecordStreamController.add({
       'timerProgress': double.parse((useTime/objectiveTime).toStringAsFixed(1)),
       'countProgress': double.parse((useCount/objectiveCount).toStringAsFixed(1))

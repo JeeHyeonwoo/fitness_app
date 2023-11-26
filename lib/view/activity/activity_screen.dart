@@ -45,7 +45,6 @@ class _ActivityScreenState extends State<ActivityScreen> {
 
   void _pageChangeEvent(DateTime dateTime) async {
     Database database = await DatabaseInit().database;
-
     DateTime minDt = DateTime(dateTime.year, dateTime.month);
     DateTime maxDt = DateTime(dateTime.year, dateTime.month);
 
@@ -65,7 +64,6 @@ class _ActivityScreenState extends State<ActivityScreen> {
     }else {
       maxDt = maxDt.add(Duration(days:7));
     }
-
 
     List<Map<String, dynamic>> result = await database.rawQuery(
         "SELECT dateTime, SUM(count) as count, SUM(useTime) as useTime "
@@ -88,10 +86,12 @@ class _ActivityScreenState extends State<ActivityScreen> {
     DateTime minDt = DateTime.now();
     DateTime maxDt = DateTime.now();
     int week = dateTime.weekday;
+
     if(week < 7) {
       minDt = dateTime.subtract(Duration(days:week));
       maxDt = dateTime.add(Duration(days:7-week));
     }else {
+      minDt = dateTime;
       maxDt = dateTime.add(Duration(days: 7));
     }
 
@@ -103,8 +103,8 @@ class _ActivityScreenState extends State<ActivityScreen> {
             "ORDER BY dateTime ASC"
     );
 
-    List<Map<String, dynamic>> result2 =
-        await database.rawQuery("SELECT * FROM ObjectiveSettingInfo");
+
+    List<Map<String, dynamic>> result2 = await database.rawQuery("SELECT * FROM ObjectiveSettingInfo");
     Map<String, int> objective = {"timer": 900, "count": 50};
     if(result2.isNotEmpty) {
       objective['timer'] = result2[0]['timer'];
@@ -125,19 +125,19 @@ class _ActivityScreenState extends State<ActivityScreen> {
       for(Map<String, dynamic> e in result) {
         DateTime dt = DateTime.parse(e['dateTime']);
         switch(dt.weekday) {
-          case 0: // 월요일
+          case 1: // 월요일
             spotData[1] = FlSpot(2, (e['count']/objective['count']) < 1 ? (e['count']/objective['count']) * 100 : 100);
-          case 1: // 화
+          case 2: // 화
             spotData[2] = FlSpot(3, (e['count']/objective['count']) < 1 ? (e['count']/objective['count']) * 100 : 100);
-          case 2: // 수
+          case 3: // 수
             spotData[3] = FlSpot(4, (e['count']/objective['count']) < 1 ? (e['count']/objective['count']) * 100 : 100);
-          case 3: // 목
+          case 4: // 목
             spotData[4] = FlSpot(5, (e['count']/objective['count']) < 1 ? (e['count']/objective['count']) * 100 : 100);
-          case 4: // 금
+          case 5: // 금
             spotData[5] = FlSpot(6, (e['count']/objective['count']) < 1 ? (e['count']/objective['count']) * 100 : 100);
-          case 5: // 토
+          case 6: // 토
             spotData[6] = FlSpot(7, (e['count']/objective['count']) < 1 ? (e['count']/objective['count']) * 100 : 100);
-          case 6: // 일
+          case 7: // 일
             spotData[0] = FlSpot(1, (e['count']/objective['count']) < 1 ? (e['count']/objective['count']) * 100 : 100);
         }
       }
@@ -170,8 +170,9 @@ class _ActivityScreenState extends State<ActivityScreen> {
                 "운동 기록",
                 style: TextStyle(
                     color: AppColors.whiteColor,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700),
+                    fontFamily: 'SkyBori_KR',
+                    fontSize: 30,
+                    fontWeight: FontWeight.normal),
               ),
             ),
             SliverAppBar(
@@ -187,67 +188,6 @@ class _ActivityScreenState extends State<ActivityScreen> {
                 width: double.maxFinite,
                 child: LineChart(
                   LineChartData(
-                    /*lineTouchData: LineTouchData(
-                      enabled: true,
-                      handleBuiltInTouches: false,
-                      touchCallback:
-                          (FlTouchEvent event, LineTouchResponse? response) {
-                        if (response == null || response.lineBarSpots == null) {
-                          return;
-                        }
-                        if (event is FlTapUpEvent) {
-                          final spotIndex =
-                              response.lineBarSpots!.first.spotIndex;
-                          showingTooltipOnSpots.clear();
-                          setState(() {
-                            showingTooltipOnSpots.add(spotIndex);
-                          });
-                        }
-                      },
-                      mouseCursorResolver:
-                          (FlTouchEvent event, LineTouchResponse? response) {
-                        if (response == null || response.lineBarSpots == null) {
-                          return SystemMouseCursors.basic;
-                        }
-                        return SystemMouseCursors.click;
-                      },
-                      getTouchedSpotIndicator:
-                          (LineChartBarData barData, List<int> spotIndexes) {
-                        return spotIndexes.map((index) {
-                          return TouchedSpotIndicatorData(
-                            FlLine(
-                              color: Colors.transparent,
-                            ),
-                            FlDotData(
-                              show: true,
-                              getDotPainter: (spot, percent, barData, index) =>
-                                  FlDotCirclePainter(
-                                    radius: 3,
-                                    color: Colors.white,
-                                    strokeWidth: 3,
-                                    strokeColor: AppColors.secondaryColor1,
-                                  ),
-                            ),
-                          );
-                        }).toList();
-                      },
-                      touchTooltipData: LineTouchTooltipData(
-                        tooltipBgColor: AppColors.secondaryColor1,
-                        tooltipRoundedRadius: 20,
-                        getTooltipItems: (List<LineBarSpot> lineBarsSpot) {
-                          return lineBarsSpot.map((lineBarSpot) {
-                            return LineTooltipItem(
-                              "${lineBarSpot.x.toInt()} mins ago",
-                              const TextStyle(
-                                color: Colors.white,
-                                fontSize: 10,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            );
-                          }).toList();
-                        },
-                      ),
-                    ),*/
                     lineBarsData: lineBarsData1,
                     minY: -0.5,
                     maxY: 110,
@@ -310,42 +250,6 @@ class _ActivityScreenState extends State<ActivityScreen> {
                   SizedBox(
                     height: media.width * 0.05,
                   ),
-                  /*Container(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 15, horizontal: 15),
-                    decoration: BoxDecoration(
-                      color: AppColors.primaryColor2.withOpacity(0.3),
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          "Daily Workout Schedule",
-                          style: TextStyle(
-                              color: AppColors.blackColor,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w700),
-                        ),
-                        SizedBox(
-                          width: 70,
-                          height: 25,
-                          child: RoundButton(
-                            title: "Check",
-                            onPressed: () {
-                              // Navigator.push(
-                              //   context,
-                              //   MaterialPageRoute(
-                              //     builder: (context) =>
-                              //         const ActivityTrackerView(),
-                              //   ),
-                              // );
-                            },
-                          ),
-                        )
-                      ],
-                    ),
-                  ),*/
                   SizedBox(
                     height: media.width * 0.05,
                   ),
@@ -376,7 +280,11 @@ class _ActivityScreenState extends State<ActivityScreen> {
                       markerDecoration: BoxDecoration(
                         color: Colors.green,
                         shape: BoxShape.circle
-                      )
+                      ),
+                      markerSize: 15.0,
+                      markerSizeScale:10.0,
+                      markersAlignment: Alignment.bottomCenter,
+                      markersMaxCount: 1
                     ),
                     availableGestures: AvailableGestures.none,
                     eventLoader: (day) {
@@ -384,6 +292,9 @@ class _ActivityScreenState extends State<ActivityScreen> {
                     },
                     onPageChanged: (d) {
                       _pageChangeEvent(d);
+                      setState(() {
+                        this.foucsedDay = d;
+                      });
                     },
                     onDaySelected: (selectedDay, focusedDay) {
                       _searchRange(focusedDay);

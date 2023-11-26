@@ -38,7 +38,7 @@ class WelcomeScreen extends StatelessWidget {
                 style: TextStyle(
                   color: AppColors.grayColor,
                   fontSize: 12,
-                  fontFamily: "Poppins",
+                  fontFamily: "SkyBori_KR",
                   fontWeight: FontWeight.w400,
                 ),
               ),

@@ -44,7 +44,7 @@ class LoginScreen extends StatelessWidget {
                       style: TextStyle(
                         color: AppColors.blackColor,
                         fontSize: 20,
-                        fontFamily: "Poppins",
+                        fontFamily: "SkyBori_KR",
                         fontWeight: FontWeight.w700,
                       ),
                     ),

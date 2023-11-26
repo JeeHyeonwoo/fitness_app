@@ -61,9 +61,9 @@ class _UserProfileState extends State<UserProfile> {
         title: const Text(
           "설정",
           style: TextStyle(
-              color: AppColors.blackColor,
-              fontSize: 16,
-              fontWeight: FontWeight.w700),
+              color: Colors.black87,
+              fontSize: 30,
+              fontWeight: FontWeight.normal),
         ),
       ),
       body: SingleChildScrollView(
@@ -150,7 +150,7 @@ class _UserProfileState extends State<UserProfile> {
                   const SizedBox(
                     height: 25,
                   ),
-                  Container(
+                  /*Container(
                     padding:
                     const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
                     decoration: BoxDecoration(
@@ -256,7 +256,7 @@ class _UserProfileState extends State<UserProfile> {
                   ),
                   const SizedBox(
                     height: 25,
-                  ),
+                  ),*/
                   /*Container(
                 padding:
                 const EdgeInsets.symmetric(vertical: 10, horizontal: 15),

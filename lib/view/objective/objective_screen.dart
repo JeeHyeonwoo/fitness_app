@@ -37,7 +37,7 @@ class _ObjectiveScreenState extends State<ObjectiveScreen>{
           barrierDismissible: false,
           builder: (BuildContext ctx){
             return AlertDialog(
-              content: const Text("저장되었습니다", style: TextStyle(fontWeight: FontWeight.w700, fontFamily: "Poppins"), textAlign: TextAlign.center ),
+              content: const Text("저장되었습니다", style: TextStyle(fontWeight: FontWeight.w700, fontFamily: "SkyBori_KR"), textAlign: TextAlign.center ),
             );
           });
     }
@@ -90,7 +90,7 @@ class _ObjectiveScreenState extends State<ObjectiveScreen>{
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text("오늘보다 더 나은 내일을 위해", style: TextStyle(color: AppColors.midGrayColor, fontSize: 15,),),
-                          Text("목표를 만들어보세요", style: TextStyle(color: AppColors.blackColor, fontSize: 23, fontFamily: "Poppins", fontWeight: FontWeight.w700,),)
+                          Text("목표를 만들어보세요", style: TextStyle(color: AppColors.blackColor, fontSize: 23, fontFamily: "SkyBori_KR", fontWeight: FontWeight.w700,),)
                         ],),
                     ],),
               ),
@@ -102,7 +102,7 @@ class _ObjectiveScreenState extends State<ObjectiveScreen>{
                       Container(
                         child: Padding(
                           padding: const EdgeInsets.symmetric(vertical: 15),
-                          child: const Text("시간 설정", style: TextStyle(color: AppColors.blackColor, fontSize: 21, fontFamily: "Poppins", fontWeight: FontWeight.w700),),
+                          child: const Text("시간 설정", style: TextStyle(color: AppColors.blackColor, fontSize: 21, fontFamily: "SkyBori_KR", fontWeight: FontWeight.w700),),
                         ),
                       ),
                       TimePickerSpinner(
@@ -126,7 +126,7 @@ class _ObjectiveScreenState extends State<ObjectiveScreen>{
                       Container(
                         child: Padding(
                           padding: const EdgeInsets.symmetric(vertical: 15),
-                          child: const Text("횟수 설정", style: TextStyle(color: AppColors.blackColor, fontSize: 21, fontFamily: "Poppins", fontWeight: FontWeight.w700),),
+                          child: const Text("횟수 설정", style: TextStyle(color: AppColors.blackColor, fontSize: 21, fontFamily: "SkyBori_KR", fontWeight: FontWeight.w700),),
                         ),
                       ),
                       Center(

@@ -21,6 +21,7 @@ class _SignupScreenState extends State<SignupScreen> {
   TextEditingController _weightController = TextEditingController();
   TextEditingController _heightController = TextEditingController();
   TextEditingController _dateController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     var media = MediaQuery.of(context).size;
@@ -46,7 +47,7 @@ class _SignupScreenState extends State<SignupScreen> {
                       style: TextStyle(
                         color: AppColors.blackColor,
                         fontSize: 20,
-                        fontFamily: "Poppins",
+                        fontFamily: "SkyBori_KR",
                         fontWeight: FontWeight.w700,
                       ),
                     ),

@@ -38,7 +38,7 @@ class RoundButton extends StatelessWidget {
           style: TextStyle(
             fontSize: fontSize,
             color: AppColors.whiteColor,
-            fontFamily: "Poppins",
+            fontFamily: "SkyBori_KR",
             fontWeight: FontWeight.w400,
           ),
         ),

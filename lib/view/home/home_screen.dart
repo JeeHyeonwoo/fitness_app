@@ -2,10 +2,12 @@ import 'dart:async';
 
 import 'package:fitnessapp/utils/app_colors.dart';
 import 'package:fitnessapp/utils/db/workout_record/workout_record_recent.dart';
+import 'package:fitnessapp/utils/notifications/fcm_controller.dart';
 import 'package:fitnessapp/view/home/widgets/workout_row.dart';
 import 'package:fitnessapp/view/objective/objective_screen.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import '../../common_widgets/round_button.dart';
 import '../notification/notification_screen.dart';
 
@@ -103,7 +105,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   List lastWorkoutArr = [
     {
-      "name": "운동시간",
+      "name": " 운동시간",
       "image": "assets/images/Workout1.png",
       "progress": 0.0
     },
@@ -117,7 +119,6 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     recentWorkoutStream = workoutRecordRecent.stream.listen((map) {
-      print("map : ${map}");
       setState(() {
         lastWorkoutArr = [{
             "name": "운동시간",
@@ -194,7 +195,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           style: TextStyle(
                             color: AppColors.blackColor,
                             fontSize: 20,
-                            fontFamily: "Poppins",
+                            fontFamily: "IOM_Medium",
                             fontWeight: FontWeight.w700,
                           ),
                         )
@@ -202,6 +203,11 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     IconButton(
                         onPressed: () {
+                          FCMController fcm = FCMController();
+                          String userToken = "ezr05B0VSISEbGyXy-e8AU:APA91bHWDnE6AoUuDDXpK1y-vVOiohdcGx3E6cASnt4O2uK9W1O90Gu-RLAsPzfrUY1Se59UV-yLOr9Gn6YM5BKgpc8xooHHB7UkBT6wDJRI5rxiHUbcNKR0keIYXDtthisrfvcmVAEA";
+                          String title = "알림이 전송되었습니다";
+                          String body = '{ "title" : "님이 목표를 달성했습니다", "time" : "${DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now())}"}';
+                          fcm.sendMessage(userToken: userToken, title: title, body: body);
                           Navigator.pushNamed(
                               context, NotificationScreen.routeName);
                         },
@@ -252,7 +258,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     color:
                                         AppColors.whiteColor.withOpacity(0.7),
                                     fontSize: 12,
-                                    fontFamily: "Poppins",
+                                    fontFamily: "SkyBori_KR",
                                     fontWeight: FontWeight.w400,
                                   ),
                                 ),
