@@ -1,16 +1,15 @@
-# fitness 앱
+![타이머 및 카운트_운동 종료](https://github.com/JeeHyeonwoo/fitness_app/assets/50545934/07f66e1f-174d-4fa9-b630-f6266ab2e05d)![보호자 메뉴_수정](https://github.com/JeeHyeonwoo/fitness_app/assets/50545934/356b13c9-0deb-4a4c-9c62-7f0706cee587)# fitness 앱
 
 자체 제작 신발과 연동되어 좌우 불균형 교정 서비스를 제공하는 앱
 
-**Features**:
+**기능**:
+- 자체 제작 신발과 블루투스 통신
+- 타이머 기능 및 운동 횟수 카운팅
+- 월, 주별 운동량 통계
+- 보호자 알림 메세지 서비스 
 
-- Material mobile UI/UX design.
-- Beautiful Pie, Line, Progress chart.
-- Workout tracker, Workout schedule.
-- Exercises details with steps UI.
-- Progress photo gallery UI.
-- Profile screen UI.
-- Notification screen UI.
-- Custom widgets, clean code.
 
-![Preview](fitness_app.png)
+![Uploading 운동기록_메인.jpg…]()
+![타이머 및 카운트_블루투스 연결](https://github.com/JeeHyeonwoo/fitness_app/assets/50545934/01ca19f8-00fd-42d9-afba-4a60b921aef4)
+![Uploading 타이머 및 카운트_운동 종료.jpg…]()
+![보호자 메뉴_메인](https://github.com/JeeHyeonwoo/fitness_app/assets/50545934/8d89b0ac-dae9-4521-861e-eb686cbed6a0)
