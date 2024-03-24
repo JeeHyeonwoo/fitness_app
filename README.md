@@ -1,7 +1,6 @@
-# fitnessapp
- 
-Fitness workout app is a professional app template that provides pre-set workout plans for
-bodybuilding, Weight Gain, Weight loss & other Fitness Workout as your bodybuilding and Workout trainer.
+# fitness 앱
+
+자체 제작 신발과 연동되어 좌우 불균형 교정 서비스를 제공하는 앱
 
 **Features**:
 
